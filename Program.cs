@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -47,7 +48,9 @@ namespace MemoryGame
     public class Board
     {
         public string[,] board;
-        List<string> pom = new List<string> { "banana", "apple", "peach", "onion", "pizza", "bread", "beer", "water" };
+        //List<string> pom = new List<string> { "banana", "apple", "peach", "onion", "pizza", "bread", "beer", "water" };
+
+
 
         List<Word> words = new List<Word>();
         int score, chances;
@@ -59,7 +62,6 @@ namespace MemoryGame
             chances = 0;
         }
 
-        // Constructor that takes one argument:
         public Board(bool mode)
         {
             if (mode)
@@ -82,7 +84,20 @@ namespace MemoryGame
         {
             var rowCount = board.GetLength(0);
             var colCount = board.GetLength(1);
-            int x, y;
+            int x, y, z;
+
+            var WordFile = File.ReadAllLines("Words.txt");
+
+
+            var wordlist = new List<string>(WordFile);
+            List<string> pom = new List<string>();
+
+            for(int i= 0; i<guess; i++)
+            {
+                z = random.Next(0, wordlist.Count);
+                pom.Add(wordlist[z]);
+                wordlist.RemoveAt(z);
+            }
 
 
             for (int c = 0; c < 2; c++)
@@ -365,19 +380,20 @@ namespace MemoryGame
 
                 board.PrintB(true);
 
-                if (board.GetChances() == 0)
-                {
-                    Console.WriteLine("\n\nYou have lost :(");
-                    board.PrintB(false);
-                }
-                else
+                if (board.GetScore() == guess)
                 {
                     Console.WriteLine("\n\nYou have won the game! Congratulations! ");
                     TimeSpan ts = counter.Elapsed;
                     int temp = (guess == 4 ? 10 - board.GetChances() : 15 - board.GetChances());
                     Console.WriteLine($"You solved the memory game after {temp} turns. It took you {ts.Seconds} seconds.");
 
+                }             
+                else
+                {
+                    Console.WriteLine("\n\nYou have lost :(");
+                    board.PrintB(false);
                 }
+
 
 
 
