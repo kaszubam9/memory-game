@@ -1,4 +1,10 @@
-﻿using System;
+﻿///////////////////////////////
+///Simple memory game in C#
+///Author: Michał Kaszuba
+///Email: mkaszuba09@gmail.com
+///////////////////////////////
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace MemoryGame
 {
-    public class Word
+    public class Word       //Single word class containing its name, coordinates and status
     {
         string name;
         int x, y;
@@ -45,12 +51,11 @@ namespace MemoryGame
         }
     }
 
-    public class Board
+    public class Board      //Board Class contains score, guess chances, whole board and it manages the whole game.
     {
-        public string[,] board;
-        //List<string> pom = new List<string> { "banana", "apple", "peach", "onion", "pizza", "bread", "beer", "water" };
+        public string[,] board; //Board matrix
 
-        List<Word> words = new List<Word>();
+        List<Word> words = new List<Word>(); //List words contains objects of class Word
         int score, chances;
 
         public Board()
@@ -78,7 +83,7 @@ namespace MemoryGame
 
         Random random = new Random();
 
-        public void GenB(int guess)
+        public void GenB(int guess) //Filling board with random words from file Words.txt \project_directory\bin\Debug\Words.txt
         {
             var rowCount = board.GetLength(0);
             var colCount = board.GetLength(1);
@@ -94,7 +99,7 @@ namespace MemoryGame
             {
                 z = random.Next(0, wordlist.Count);
                 pom.Add(wordlist[z]);
-                wordlist.RemoveAt(z);
+                wordlist.RemoveAt(z);       //words cannot be repeated
             }
 
 
@@ -110,7 +115,7 @@ namespace MemoryGame
                             continue;
                         else
                         {
-                            words.Add(new Word(pom[i], x, y));
+                            words.Add(new Word(pom[i], x, y));  //Filling board and list with words
                             board[x, y] = pom[i];
                             break;
                         }
@@ -120,7 +125,7 @@ namespace MemoryGame
             }
         }
 
-        public bool CheckS(int xz, int yz)
+        public bool CheckS(int xz, int yz)      //Find word status by its coordinates
         {
             foreach (var item in words)
             {
@@ -130,7 +135,7 @@ namespace MemoryGame
             return false;
         }
 
-        public void SetS(int xz, int yz, bool status)
+        public void SetS(int xz, int yz, bool status)   //Set word status by its coordinates
         {
             foreach (var item in words)
             {
@@ -141,7 +146,7 @@ namespace MemoryGame
         }
 
 
-        public void PrintB(bool hide)
+        public void PrintB(bool hide)               //display board
         {
 
             var rowCount = board.GetLength(0);
@@ -156,10 +161,10 @@ namespace MemoryGame
                 for (int col = 0; col < colCount; col++)
                 {
 
-                    if (hide)
-                        Console.Write(String.Format("{0}\t", CheckS(row, col) == false ? board[row, col] : ""));
-                    else
-                        Console.Write(String.Format("{0}\t", board[row, col]));
+                    if (hide)       
+                        Console.Write(String.Format("{0}\t", CheckS(row, col) == false ? board[row, col] : "    "));    //Hiding words. If word is hidden, replace it with "    "
+                    else           
+                        Console.Write(String.Format("{0}\t", board[row, col]));             //Show all words
 
 
                 }
@@ -168,12 +173,12 @@ namespace MemoryGame
             Console.WriteLine("\n-------------------------");
         }
 
-        public int Turn()
+        public int Turn()               
         {
             int row1, col1, row2, col2;
             string din;
             PrintB(true);
-            Console.WriteLine("\n\nEnter first coordinates [rowcol] eg. A2: ");
+            Console.WriteLine("\n\nEnter first coordinates [rowcol] eg. A2: ");     //get coordinates from user and check if they are correct
             while (true)
             {
 
@@ -187,7 +192,7 @@ namespace MemoryGame
 
                 row1 = -1;
 
-                switch (din[0].ToString())
+                switch (din[0].ToString())        
                 {
 
                     case "A":
@@ -208,7 +213,7 @@ namespace MemoryGame
 
                 if (col1 > 0 && col1 < board.GetLength(1) && row1 > 0 && row1 < board.GetLength(0))
                 {
-                    if (CheckS(row1, col1))
+                    if (CheckS(row1, col1))             //if coordinates are correct, unhide word
                     {
                         SetS(row1, col1, false);
                         break;
@@ -230,7 +235,7 @@ namespace MemoryGame
 
             PrintB(true);
 
-            Console.WriteLine("\n\nEnter second coordinates [rowcol] eg. A2: ");
+            Console.WriteLine("\n\nEnter second coordinates [rowcol] eg. A2: ");        //get coordinates from user and check if they are correct
             while (true)
             {
                 din = Console.ReadLine();
@@ -264,7 +269,7 @@ namespace MemoryGame
 
                 if (col2 > 0 && col2 < board.GetLength(1) && row2 > 0 && row2 < board.GetLength(0))
                 {
-                    if (row2 == row1 && col2 == col1)
+                    if (row2 == row1 && col2 == col1)           //user cannot provide identical coordinates
                     {
                         Console.WriteLine("\nYou entered identical coordinates. Try again: ");
                         continue;
@@ -272,9 +277,9 @@ namespace MemoryGame
                     else
                     {
 
-                        if (CheckS(row2, col2))
+                        if (CheckS(row2, col2))                 //if coordinates are correct, unhide word
                         {
-                            SetS(row2, col2, false);
+                            SetS(row2, col2, false);            
                             break;
                         }
                         else
@@ -291,7 +296,7 @@ namespace MemoryGame
                 }
             }
 
-            foreach (var item in words)
+            foreach (var item in words)                     //check if the selected words match
             {
                 if (item.GetX() == row1 && item.GetY() == col1)
                 {
@@ -311,7 +316,7 @@ namespace MemoryGame
             }
 
             PrintB(true);
-            SetS(row1, col1, true);
+            SetS(row1, col1, true);     //if the selected words don't match, hide them
             SetS(row2, col2, true);
 
 
@@ -326,7 +331,7 @@ namespace MemoryGame
         {
             return chances;
         }
-        public void SubChances(int c)
+        public void DecChances(int c)
         {
             chances -= c;
         }
@@ -350,7 +355,7 @@ namespace MemoryGame
                 int guess = 0;
                 Board board = new Board();
 
-                switch (Console.ReadLine())
+                switch (Console.ReadLine())     //choosing difficulty
                 {
                     case "e":
                         guess = 4;
@@ -360,18 +365,21 @@ namespace MemoryGame
                     case "h":
                         guess = 8;
                         board = new Board(false);
-
                         break;
+
+                    default:
+                        Console.WriteLine("\nWrong parameter. Try again: ");
+                        continue;
                 }
 
-                board.GenB(guess);
+                board.GenB(guess);              //generating board
 
                 Stopwatch counter = new Stopwatch();
-                counter.Start();
+                counter.Start();                //counting time
                 while (board.GetScore() < guess && board.GetChances() != 0)
                 {
                     Console.Clear();
-                    board.SubChances(board.Turn());
+                    board.DecChances(board.Turn());
                     Thread.Sleep(1500);
                 }
                 counter.Stop();
