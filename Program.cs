@@ -50,8 +50,6 @@ namespace MemoryGame
         public string[,] board;
         //List<string> pom = new List<string> { "banana", "apple", "peach", "onion", "pizza", "bread", "beer", "water" };
 
-
-
         List<Word> words = new List<Word>();
         int score, chances;
 
